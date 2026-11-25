@@ -60,16 +60,29 @@ def write_3mf(out, objects):
         z.writestr('_rels/.rels', rels)
         z.writestr('3D/3dmodel.model', model)
 
-def pack(parts, bed=256, gap=8):
-    """간단한 줄 배치 (위에서 아래로 열 채우기)"""
-    placed, x, y, colw = [], gap, gap, 0
+def rot90(verts, size):
+    """Z축 90도 회전 (베드 위에서 눕힌 방향 유지)"""
+    return [(size[1]-y, x, z) for x, y, z in verts], (size[1], size[0], size[2])
+
+def pack(parts, bed=256, gap=6):
+    """열 단위 first-fit 배치. 안 들어가면 90도 돌려서 다시 시도"""
+    cols, placed = [], []   # col = [x, y_next, width]
+    def try_place(verts, size):
+        for i, c in enumerate(cols):
+            limit = cols[i+1][0] - gap if i + 1 < len(cols) else bed - gap
+            if c[1] + size[1] <= bed - gap and c[0] + size[0] <= limit:
+                pos = (c[0], c[1]); c[1] += size[1] + gap; c[2] = max(c[2], size[0]); return pos
+        x = gap if not cols else cols[-1][0] + cols[-1][2] + gap
+        if x + size[0] <= bed - gap and gap + size[1] <= bed - gap:
+            cols.append([x, gap + size[1] + gap, size[0]]); return (x, gap)
+        return None
     for name, verts, faces, size in parts:
-        if y + size[1] > bed - gap:
-            x += colw + gap; y = gap; colw = 0
-        if x + size[0] > bed - gap:
+        pos = try_place(verts, size)
+        if pos is None:
+            verts, size = rot90(verts, size); pos = try_place(verts, size)
+        if pos is None:
             raise SystemExit(f'베드에 다 안 들어감: {name}')
-        placed.append((name, verts, faces, (x, y)))
-        y += size[1] + gap; colw = max(colw, size[0])
+        placed.append((name, verts, faces, pos))
     return placed
 
 if __name__ == '__main__':
