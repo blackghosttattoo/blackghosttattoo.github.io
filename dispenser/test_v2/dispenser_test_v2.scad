@@ -215,8 +215,8 @@ module guide(w=w_set) {
   g = gx(w);
   difference() {
     union() {
-      box(g, g+g_t, y_bf+clr, y_a-clr, z_pl1+1.5, z_top+0.01);              // 세로판
-      box(g-4, g+0.01, -3, -clr-0.1, z_pl1+1.5, z_top+0.01);                 // 립
+      box(g, g+g_t, y_bf+clr, y_a-clr, z_pl1+1.5, z_top+1.2);              // 세로판
+      box(g-4, g+0.01, -3, -clr-0.1, z_pl1+1.5, z_top+1.2);                 // 립
       box(g, g+9, y_uf, y_bw1, z_top+0.5, z_top+4);                          // 윗 손잡이 (톱니에 얹힘)
     }
     // 아래 톱니 홈 (본체 톱니와 맞물림)
