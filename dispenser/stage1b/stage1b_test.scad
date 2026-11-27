@@ -262,6 +262,9 @@ module zspring() {
   }
 }
 
+// ---------------- PLA 대체 칼날 (90mm, 한쪽이 얇아짐) ----------------
+module dblade() hull() { cube([blade_len, blade_w-2.5, 0.6]); translate([0, blade_w-0.01, 0]) cube([blade_len, 0.01, 0.2]); }
+
 // ---------------- 재사용 부품 (미리보기용, 출력 안 함) ----------------
 module anvil_old() difference() { box(wall_o+clr, mw-wall_o-clr, y_a, y_an1, gap_z-6+0.15, gap_z+6); box(0, mw, y_a-1, g_end, gap_z-0.5, gap_z+0.5); }
 module holder_old() translate([0,0,z_cu]) difference() {
@@ -295,3 +298,4 @@ else if (part=="hplate")  { if (print) translate([0,0,tt(p_view)-arm_h]) mirror(
 else if (part=="slider")  { if (print) translate([0,0,-lip_z]) slider(); else slider(); }
 else if (part=="rod")     { if (print) translate([0,0,rod_d/2-0.6]) rod(); else rod(); }
 else if (part=="zspring") zspring();
+else if (part=="dblade")  dblade();
